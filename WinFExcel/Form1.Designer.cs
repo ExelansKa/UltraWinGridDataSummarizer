@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.Ugv = new Infragistics.Win.UltraWinGrid.UltraGrid();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btn = new System.Windows.Forms.Button();
             this.btnMore = new System.Windows.Forms.Button();
             this.CtMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MnSoma = new System.Windows.Forms.ToolStripTextBox();
@@ -62,6 +63,7 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
+            this.panel1.Controls.Add(this.btn);
             this.panel1.Controls.Add(this.btnMore);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -69,6 +71,19 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(800, 33);
             this.panel1.TabIndex = 1;
+            // 
+            // btn
+            // 
+            this.btn.AutoSize = true;
+            this.btn.FlatAppearance.BorderSize = 0;
+            this.btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn.Font = new System.Drawing.Font("Leelawadee UI Semilight", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn.ForeColor = System.Drawing.Color.White;
+            this.btn.Location = new System.Drawing.Point(518, 6);
+            this.btn.Name = "btn";
+            this.btn.Size = new System.Drawing.Size(81, 25);
+            this.btn.TabIndex = 2;
+            this.btn.UseVisualStyleBackColor = true;
             // 
             // btnMore
             // 
@@ -78,13 +93,14 @@
             this.btnMore.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMore.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnMore.ForeColor = System.Drawing.Color.White;
-            this.btnMore.Location = new System.Drawing.Point(585, 5);
+            this.btnMore.Location = new System.Drawing.Point(749, 5);
             this.btnMore.Name = "btnMore";
             this.btnMore.Size = new System.Drawing.Size(18, 23);
             this.btnMore.TabIndex = 1;
             this.btnMore.Text = "+";
             this.btnMore.UseVisualStyleBackColor = true;
             this.btnMore.Visible = false;
+            this.btnMore.Click += new System.EventHandler(this.btnMore_Click);
             // 
             // CtMenu
             // 
@@ -152,7 +168,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(493, 11);
+            this.label1.Location = new System.Drawing.Point(708, 11);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(35, 13);
             this.label1.TabIndex = 0;
@@ -190,6 +206,7 @@
         private System.Windows.Forms.ToolStripTextBox MnAvg;
         private System.Windows.Forms.ToolStripTextBox MnMax;
         private System.Windows.Forms.ToolStripTextBox MnMin;
+        private System.Windows.Forms.Button btn;
     }
 }
 

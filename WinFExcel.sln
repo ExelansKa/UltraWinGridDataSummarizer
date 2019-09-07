@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFExcel", "WinFExcel\WinFExcel.csproj", "{E7102DC0-B677-4C6D-8936-8ACFEDB5E4A0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataSummarizer", "DataSummarizer\DataSummarizer.csproj", "{7F58080C-B633-41C6-9834-31399DA6487F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{E7102DC0-B677-4C6D-8936-8ACFEDB5E4A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7102DC0-B677-4C6D-8936-8ACFEDB5E4A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7102DC0-B677-4C6D-8936-8ACFEDB5E4A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F58080C-B633-41C6-9834-31399DA6487F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F58080C-B633-41C6-9834-31399DA6487F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F58080C-B633-41C6-9834-31399DA6487F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F58080C-B633-41C6-9834-31399DA6487F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

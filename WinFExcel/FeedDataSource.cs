@@ -25,6 +25,7 @@ namespace WinFExcel
             DtFeed.Rows.Add(new object[] { "Eloah", 2047.55, 15, false, DateTime.Parse("2019-04-05") });
             DtFeed.Rows.Add(new object[] { "Emily", 235.87, 3, true, DateTime.Parse("2004-03-07") });
             DtFeed.Rows.Add(new object[] { "Adrieli", 238.47, 7, false, DateTime.Parse("2020-07-04") });
+            DtFeed.Rows.Add(new object[] { null, null, null, null, null });
 
             return DtFeed;
         }

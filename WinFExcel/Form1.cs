@@ -17,6 +17,7 @@ namespace WinFExcel
         private void Form1_Load(object sender, EventArgs e)
         {
             Ugv.DataSource = FeedData.FeedDataTable();
+            var DtSumm = new DataSummarizer(Ugv, btn);
             Ugv.DisplayLayout.Override.CellClickAction = Infragistics.Win.UltraWinGrid.CellClickAction.CellSelect;
 
         }
@@ -79,7 +80,7 @@ namespace WinFExcel
 
         private void Ugv_MouseUp(object sender, MouseEventArgs e)
         {
-            SelecionOfCells();
+            //SelecionOfCells();
         }
 
         private void TakeFieldsVisible()
@@ -260,5 +261,9 @@ namespace WinFExcel
 
         }
 
+        private void btnMore_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
