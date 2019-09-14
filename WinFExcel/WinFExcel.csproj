@@ -55,9 +55,6 @@
     <Reference Include="UIAutomationTypes" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Calculator.cs" />
-    <Compile Include="ColsOperations.cs" />
-    <Compile Include="DataSummarizer.cs" />
     <Compile Include="FeedDataSource.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -65,7 +62,6 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="OperationsDefault.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
@@ -93,6 +89,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataSummarizer\DataSummarizer.csproj">
+      <Project>{7f58080c-b633-41c6-9834-31399da6487f}</Project>
+      <Name>DataSummarizer</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

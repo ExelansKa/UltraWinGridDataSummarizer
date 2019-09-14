@@ -51,6 +51,26 @@ namespace DataSummarizer
                     };
         }
 
+        public virtual List<Summarizer.Operations> GetListByType(string TypeOfColumns)
+        {
+            switch (TypeOfColumns)
+            {
+                case "System.Decimal":
+                    return DefaultOperations.GetDefaultNumericosOperations();
 
+                case "System.String":
+                    return DefaultOperations.GetDefaultStringOperations();
+
+                case "System.Int32":
+                    return DefaultOperations.GetDefaultNumericosOperations();
+
+                case "System.Boolean":
+                    return DefaultOperations.GetDefaultBooleanOperations();
+
+                case "System.DateTime":
+                    return DefaultOperations.GetDefaultDateOperations();
+            }
+            return null;
+        }
     }
 }

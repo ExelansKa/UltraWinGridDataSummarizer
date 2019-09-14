@@ -4,12 +4,10 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using Infragistics.Win.UltraWinGrid;
 
-
 namespace DataSummarizer
 {
-    class Summarizer
+    public class Summarizer
     {
-
         public enum Operations
         {
             sum,
@@ -27,20 +25,11 @@ namespace DataSummarizer
 
         public UltraGrid RelatedGrid { get; private set; }
 
-        public List<String> FieldsToConsidier { get; private set; }
-
         public Control DisplayControl { get; private set; }
-
-        public List<Operations> AvailableOperations { get; private set; }
 
         public List<ColsOperations> OperationsByCols { get; private set; }
 
         public ContextMenuStrip MyMenuStrip { get; set; } = new ContextMenuStrip();
-
-        //COISAS QUE ESTÃO FALTANDO AQUI: 
-        //UM SUMÁRIO DE TIPO OPERAÇÃO ONDE O TIPO COM MAIS OPERAÇÕES É O MENOS PREDOMINANTE
-        //UM RELACIONADOR QUE DIGA PARA CADA TIPO QUAL CARA MOSTRAR COMO MAIN INFO
-        // A CLASSE DE MANIPULADOR DE EVENTOS PODE SERVIR MUITO BEM SE EU QUISER PASSAR O EVENTO PARA QUALQUER N BOTÃO
 
 
 
@@ -50,189 +39,213 @@ namespace DataSummarizer
             this.RelatedGrid = relatedGrid;
             this.DisplayControl = displayControl;
             AddEvent();
+            this.OperationsByCols = BuildDefaultColsOperations();
         }
 
         public Summarizer(UltraGrid relatedGrid,
-                          List<String> fields)
+                          Control displayControl,
+                          List<string> fields)
         {
             this.RelatedGrid = relatedGrid;
-            this.FieldsToConsidier = fields;
+            this.DisplayControl = displayControl;
             AddEvent();
+            this.OperationsByCols = BuildDefaultColsOperations(fields);
         }
 
         public Summarizer(UltraGrid relatedGrid,
+                          Control displayControl,
                           List<String> fields,
-                          List<Operations> avaibleOperations)
+                          List<Operations> nonAvaibleOperations)
         {
             this.RelatedGrid = relatedGrid;
-            this.FieldsToConsidier = fields;
-            this.AvailableOperations = avaibleOperations;
+            this.DisplayControl = displayControl;
             AddEvent();
+            this.OperationsByCols = BuildDefaultColsOperations(fields, nonAvaibleOperations);
         }
 
         public Summarizer(UltraGrid relatedGrid,
+                          Control displayControl,
                           List<ColsOperations> operationsByColumns)
         {
             this.RelatedGrid = relatedGrid;
+            this.DisplayControl = displayControl;
             this.OperationsByCols = operationsByColumns;
-            this.FieldsToConsidier = GetColumnsInModel(OperationsByCols);
             AddEvent();
+        }
+
+
+
+        private List<ColsOperations> BuildDefaultColsOperations(List<string> FieldsToConsidier = null, List<Operations> NonAvaliableOperations = null)
+        {
+            try
+            {
+                var GridColumns = RelatedGrid.DisplayLayout.Bands[0].Columns;
+                var colsOperation = new List<ColsOperations>();
+
+                foreach (UltraGridColumn Col in GridColumns)
+                {
+                    var ColCase = new ColsOperations();
+                    if (FieldsToConsidier == null)
+                    {
+                        ColCase.ColName = Col.Key;
+                        ColCase.TypeName = Col.DataType.ToString();
+                    }
+
+
+                    if (FieldsToConsidier != null && FieldsToConsidier.Contains(Col.Key.ToString()))
+                    {
+                        ColCase.ColName = Col.Key;
+                        ColCase.TypeName = Col.DataType.ToString();
+                    }
+
+                    if (NonAvaliableOperations == null)
+                    {
+                        ColCase.AvaliableOperations = new DefaultOperations().GetListByType(Col.DataType.ToString());
+                    }
+
+                    if (NonAvaliableOperations != null)
+                    {
+                        var LstOp = new DefaultOperations().GetListByType(Col.DataType.ToString());
+                        foreach (Operations Op in NonAvaliableOperations)
+                        {
+                            LstOp.Remove(Op);
+                        }
+                        ColCase.AvaliableOperations = LstOp;
+                    }
+                    colsOperation.Add(ColCase);
+                    colsOperation = colsOperation.Where(Op => Op.ColName != null).ToList();
+                }
+                return colsOperation;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
 
 
         private void SelecionOfCells()
         {
-            if (RelatedGrid.Selected.Cells.Count > 1)
+            try
             {
-                var SelectedCells = RelatedGrid.Selected.Cells.All.ToList();
-                Type TipoRegente = ((UltraGridCell)SelectedCells[0]).Column.DataType;
-                Boolean TiposIguais = SelectedCells.All(C => ((UltraGridCell)C).Column.DataType == TipoRegente);
-
-                if (TiposIguais)
+                if (RelatedGrid.Selected.Cells.Count > 1)
                 {
-                    var ValuesRange = ValidatingValueRange(SelectedCells);
-                    CalcByDataType(ValuesRange);
+                    var SelectedCells = RelatedGrid.Selected.Cells. All.ToList();
+                    MyMenuStrip.Items.Clear();
+
+                    if (IsAlowedColumn())
+                    {
+                        GetPredominantType(OperationsByCols, SelectedCells);
+                    }
                 }
             }
-
-        }
-
-        private List<object> ValidatingValueRange(List<object> SelectedCells)
-        {
-
-            var ColumnsName = SelectedCells.Select(C => ((UltraGridCell)C).Column.Key).Distinct().ToList();
-
-            if (FieldsToConsidier != null)
+            catch(Exception ex)
             {
-                var ValidFields = FieldsToConsidier.Where
-                    (
-                         SelCols => ColumnsName.Contains(SelCols)
-                    );
-
-                if (ColumnsName.Count() == ValidFields.Count())
-                {
-                    return SelectedCells;
-                }
-
-            }
-            else if (FieldsToConsidier is null)
-            {
-                return SelectedCells;
-            }
-
-            return null;
-        }
-
-        private void CalcByDataType(List<object> CellsCollection)
-        {
-            //TODO: usar eventos para não usar isso:
-            MyMenuStrip.Items.Clear();
-
-            switch (((UltraGridCell)CellsCollection[0]).Column.DataType.ToString())
-            {
-
-                case "System.Decimal":
-                    CalcByModel(OperationsDefault.GetDefaultNumericosOperations(), CellsCollection);
-                    break;
-
-
-                case "System.String":
-                    CalcByModel(OperationsDefault.GetDefaultStringOperations(), CellsCollection);
-                    break;
-
-
-                case "System.Int32":
-                    CalcByModel(OperationsDefault.GetDefaultNumericosOperations(), CellsCollection);
-                    break;
-
-
-                case "System.Boolean":
-                    CalcByModel(OperationsDefault.GetDefaultBooleanOperations(), CellsCollection);
-                    break;
-
-
-                case "System.DateTime":
-                    CalcByModel(OperationsDefault.GetDefaultDateOperations(), CellsCollection);
-                    break;
-
+                MyMenuStrip.Items.Clear();
+                throw ex;
             }
         }
 
         private void CalcByModel(List<Operations> operations, List<object> CellsCollection)
         {
             var NonNullCellsCollection = GetNonNullValues(CellsCollection);
-
-            foreach (Operations op in operations)
+            try
             {
-                switch (op)
+                foreach (Operations op in operations)
                 {
-                    case Operations.avg:
-                        MyMenuStrip.Items.Add("AVG: " + Calculator.Average((from Values in NonNullCellsCollection
+                    switch (op)
+                    {
+                        case Operations.avg:
+                            MyMenuStrip.Items.Add("AVG: " + Calculator.Average((from Values in NonNullCellsCollection
+                                                                                select double.Parse(((UltraGridCell)Values).Text)).ToList()).ToString());
+                            break;
+
+                        case Operations.max:
+                            MyMenuStrip.Items.Add("MAX: " + Calculator.Max((from Values in NonNullCellsCollection
                                                                             select double.Parse(((UltraGridCell)Values).Text)).ToList()).ToString());
-                        break;
-
-                    case Operations.max:
-                        MyMenuStrip.Items.Add("MAX: " + Calculator.Max((from Values in NonNullCellsCollection
-                                                                        select double.Parse(((UltraGridCell)Values).Text)).ToList()).ToString());
-                        break;
+                            break;
 
 
-                    case Operations.maxDt:
-                        MyMenuStrip.Items.Add("MAX: " + Calculator.MaxDate(GetListDate(NonNullCellsCollection)).ToShortDateString());
-                        break;
+                        case Operations.maxDt:
+                            MyMenuStrip.Items.Add("MAX: " + Calculator.MaxDate(GetListDate(NonNullCellsCollection)).ToShortDateString());
+                            break;
 
 
-                    case Operations.min:
-                        MyMenuStrip.Items.Add("MIN: " + Calculator.Min((from Values in NonNullCellsCollection
-                                                                        select double.Parse(((UltraGridCell)Values).Text)).ToList()).ToString());
-                        break;
+                        case Operations.min:
+                            MyMenuStrip.Items.Add("MIN: " + Calculator.Min((from Values in NonNullCellsCollection
+                                                                            select double.Parse(((UltraGridCell)Values).Text)).ToList()).ToString());
+                            break;
 
-                    case Operations.minDt:
-                        MyMenuStrip.Items.Add("MIN: " + Calculator.MinDate(GetListDate(NonNullCellsCollection)).ToShortDateString());
-                        break;
+                        case Operations.minDt:
+                            MyMenuStrip.Items.Add("MIN: " + Calculator.MinDate(GetListDate(NonNullCellsCollection)).ToShortDateString());
+                            break;
 
 
-                    case Operations.sum:
-                        MyMenuStrip.Items.Add("SUM: " + Calculator.Sum((from Values in NonNullCellsCollection
-                                                                        select double.Parse(((UltraGridCell)Values).Text)).ToList()).ToString());
-                        break;
+                        case Operations.sum:
+                            MyMenuStrip.Items.Add("SUM: " + Calculator.Sum((from Values in NonNullCellsCollection
+                                                                            select double.Parse(((UltraGridCell)Values).Text)).ToList()).ToString());
+                            break;
 
-                    case Operations.count:
-                        MyMenuStrip.Items.Add("COUNT: " + CellsCollection.Count().ToString());
-                        break;
+                        case Operations.count:
+                            MyMenuStrip.Items.Add("COUNT: " + CellsCollection.Count().ToString());
+                            break;
 
-                    case Operations.True:
-                        MyMenuStrip.Items.Add("TRUE: " + NonNullCellsCollection.Where(C => (bool)((UltraGridCell)C).Value == true).Count().ToString());
-                        break;
+                        case Operations.True:
+                            MyMenuStrip.Items.Add("TRUE: " + NonNullCellsCollection.Where(C => (bool)((UltraGridCell)C).Value == true).Count().ToString());
+                            break;
 
-                    case Operations.False:
-                        MyMenuStrip.Items.Add("FALSE: " + NonNullCellsCollection.Where(C => (bool)((UltraGridCell)C).Value == false).Count().ToString());
-                        break;
+                        case Operations.False:
+                            MyMenuStrip.Items.Add("FALSE: " + NonNullCellsCollection.Where(C => (bool)((UltraGridCell)C).Value == false).Count().ToString());
+                            break;
 
-                    case Operations.NonNull:
-                        MyMenuStrip.Items.Add("NONNULL: " + NonNullCellsCollection.Count().ToString());
-                        break;
+                        case Operations.NonNull:
+                            MyMenuStrip.Items.Add("NONNULL: " + NonNullCellsCollection.Count().ToString());
+                            break;
+                    }
                 }
+            }
+            catch
+            {
+                MyMenuStrip.Text = "Invalid Operation";
             }
 
             DisplayControl.Text = MyMenuStrip.Items[0].Text;
         }
 
-
-
-        private List<string> GetColumnsInModel(List<ColsOperations> ModelCollection)
+        private void GetPredominantType(List<ColsOperations> Operations, List<object> CellsCollection)
         {
-            var LstColsName = new List<string>();
-            foreach (ColsOperations Col in ModelCollection)
-            {
-                LstColsName.Add(Col.ColName);
-            }
+            var FinalType = (from Op in CellsCollection
+                             join Tp in new DefaultOperations().TypesSummary() on ((UltraGridCell)Op).Column.DataType.ToString() equals Tp.TypeName
+                             select new
+                                     {
+                                         ColumnName = ((UltraGridCell)Op).Column.Key.ToString(),
+                                         Tp.RelevanceIndex,
+                                         DataType = ((UltraGridCell)Op).Column.DataType.ToString()
+                                     })
+                            .OrderBy(Op => Op.RelevanceIndex).Distinct().ToList();
 
-            return LstColsName;
+            CalcByModel(Operations.Where(Op => Op.ColName == FinalType[0].ColumnName).ToList()[0].AvaliableOperations, CellsCollection);
         }
 
-        public List<DateTime> GetListDate(List<object> CellsCollection)
+        private bool IsAlowedColumn()
+        {
+            var Selected = RelatedGrid.Selected.Cells.All.Select(C => ((UltraGridCell)C).Column.Key.ToString()).Distinct().ToList();
+            var AlowedValues = OperationsByCols.Where(Op => Selected.Any(Sl => Sl.Contains(Op.ColName))).ToList();
+            if (AlowedValues.Count == Selected.Count())
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+
+
+        private List<DateTime> GetListDate(List<object> CellsCollection)
         {
             var LDates = new List<DateTime>();
             foreach (UltraGridCell cell in CellsCollection)
@@ -262,13 +275,37 @@ namespace DataSummarizer
 
         private void AddEvent()
         {
-            DisplayControl.Click += DisplayControl_Click;
-            RelatedGrid.MouseUp += Ugv_MouseUp;
+            try
+            {
+                DisplayControl.Visible = false;
+                DisplayControl.Click += DisplayControl_Click;
+                RelatedGrid.MouseUp += Ugv_MouseUp;
+                RelatedGrid.AfterSelectChange += RelatedGrid_AfterSelectChange;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private void RelatedGrid_AfterSelectChange(object sender, AfterSelectChangeEventArgs e)
+        {
+            if (RelatedGrid.Selected.Cells.Count < 2)
+            {
+                DisplayControl.Text = "";
+                DisplayControl.Visible = false;
+            }
+            else
+            {
+                DisplayControl.Visible = true;
+            }
         }
 
         private void DisplayControl_Click(object sender, EventArgs e)
         {
+            MyMenuStrip.ShowImageMargin = false;
             MyMenuStrip.Visible = true;
+            MyMenuStrip.Show(DisplayControl, 0, -(MyMenuStrip.Height));
         }
 
         private void Ugv_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)

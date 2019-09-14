@@ -32,14 +32,12 @@
             this.Ugv = new Infragistics.Win.UltraWinGrid.UltraGrid();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btn = new System.Windows.Forms.Button();
-            this.btnMore = new System.Windows.Forms.Button();
             this.CtMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MnSoma = new System.Windows.Forms.ToolStripTextBox();
             this.MnCont = new System.Windows.Forms.ToolStripTextBox();
             this.MnAvg = new System.Windows.Forms.ToolStripTextBox();
             this.MnMax = new System.Windows.Forms.ToolStripTextBox();
             this.MnMin = new System.Windows.Forms.ToolStripTextBox();
-            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.Ugv)).BeginInit();
             this.panel1.SuspendLayout();
             this.CtMenu.SuspendLayout();
@@ -58,14 +56,12 @@
             this.Ugv.Name = "Ugv";
             this.Ugv.Size = new System.Drawing.Size(800, 297);
             this.Ugv.TabIndex = 0;
-            this.Ugv.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Ugv_MouseUp);
+            this.Ugv.AfterSelectChange += new Infragistics.Win.UltraWinGrid.AfterSelectChangeEventHandler(this.Ugv_AfterSelectChange);
             // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
             this.panel1.Controls.Add(this.btn);
-            this.panel1.Controls.Add(this.btnMore);
-            this.panel1.Controls.Add(this.label1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(0, 293);
             this.panel1.Name = "panel1";
@@ -84,23 +80,6 @@
             this.btn.Size = new System.Drawing.Size(81, 25);
             this.btn.TabIndex = 2;
             this.btn.UseVisualStyleBackColor = true;
-            // 
-            // btnMore
-            // 
-            this.btnMore.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnMore.ContextMenuStrip = this.CtMenu;
-            this.btnMore.FlatAppearance.BorderSize = 0;
-            this.btnMore.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnMore.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnMore.ForeColor = System.Drawing.Color.White;
-            this.btnMore.Location = new System.Drawing.Point(749, 5);
-            this.btnMore.Name = "btnMore";
-            this.btnMore.Size = new System.Drawing.Size(18, 23);
-            this.btnMore.TabIndex = 1;
-            this.btnMore.Text = "+";
-            this.btnMore.UseVisualStyleBackColor = true;
-            this.btnMore.Visible = false;
-            this.btnMore.Click += new System.EventHandler(this.btnMore_Click);
             // 
             // CtMenu
             // 
@@ -164,17 +143,6 @@
             this.MnMin.Size = new System.Drawing.Size(100, 16);
             this.MnMin.Text = "Min";
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(708, 11);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "label1";
-            this.label1.Visible = false;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -198,8 +166,6 @@
 
         private Infragistics.Win.UltraWinGrid.UltraGrid Ugv;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button btnMore;
         private System.Windows.Forms.ContextMenuStrip CtMenu;
         private System.Windows.Forms.ToolStripTextBox MnSoma;
         private System.Windows.Forms.ToolStripTextBox MnCont;

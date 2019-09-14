@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WinFExcel
+namespace DataSummarizer
 {
     internal class Calculator
     {
