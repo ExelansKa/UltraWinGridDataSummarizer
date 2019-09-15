@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace DataSummarizer
 {
     internal class DefaultOperations
     {
-
         public static List<Summarizer.Operations> GetDefaultStringOperations()
         {
             return new List<Summarizer.Operations>()

@@ -31,6 +31,8 @@ namespace DataSummarizer
 
         public ContextMenuStrip MyMenuStrip { get; set; } = new ContextMenuStrip();
 
+        public List<Exception> exceptions { get; private set; } = new List<Exception>();
+
 
 
         public Summarizer(UltraGrid relatedGrid,
@@ -72,7 +74,6 @@ namespace DataSummarizer
             this.OperationsByCols = operationsByColumns;
             AddEvent();
         }
-
 
 
         private List<ColsOperations> BuildDefaultColsOperations(List<string> FieldsToConsidier = null, List<Operations> NonAvaliableOperations = null)
@@ -124,16 +125,13 @@ namespace DataSummarizer
         }
 
 
-
         private void SelecionOfCells()
         {
             try
             {
                 if (RelatedGrid.Selected.Cells.Count > 1)
                 {
-                    var SelectedCells = RelatedGrid.Selected.Cells. All.ToList();
-                    MyMenuStrip.Items.Clear();
-
+                    var SelectedCells = RelatedGrid.Selected.Cells.All.ToList();
                     if (IsAlowedColumn())
                     {
                         GetPredominantType(OperationsByCols, SelectedCells);
@@ -143,15 +141,16 @@ namespace DataSummarizer
             catch(Exception ex)
             {
                 MyMenuStrip.Items.Clear();
-                throw ex;
+                DisplayControl.Text = "Error";
+                exceptions.Add(ex);
             }
         }
 
         private void CalcByModel(List<Operations> operations, List<object> CellsCollection)
         {
-            var NonNullCellsCollection = GetNonNullValues(CellsCollection);
             try
             {
+                var NonNullCellsCollection = GetNonNullValues(CellsCollection);
                 foreach (Operations op in operations)
                 {
                     switch (op)
@@ -204,28 +203,35 @@ namespace DataSummarizer
                             break;
                     }
                 }
-            }
-            catch
-            {
-                MyMenuStrip.Text = "Invalid Operation";
-            }
 
-            DisplayControl.Text = MyMenuStrip.Items[0].Text;
+                if(MyMenuStrip.Items.Count > 0) DisplayControl.Text = MyMenuStrip.Items[0].Text;
+            }
+            catch(Exception ex)
+            {
+                DisplayControl.Text = "Invalid Operation";
+                exceptions.Add(ex);
+            }
         }
 
         private void GetPredominantType(List<ColsOperations> Operations, List<object> CellsCollection)
         {
-            var FinalType = (from Op in CellsCollection
-                             join Tp in new DefaultOperations().TypesSummary() on ((UltraGridCell)Op).Column.DataType.ToString() equals Tp.TypeName
-                             select new
-                                     {
-                                         ColumnName = ((UltraGridCell)Op).Column.Key.ToString(),
-                                         Tp.RelevanceIndex,
-                                         DataType = ((UltraGridCell)Op).Column.DataType.ToString()
-                                     })
-                            .OrderBy(Op => Op.RelevanceIndex).Distinct().ToList();
+            var OpeCols = (from Op in Operations
+                           join Tp in CellsCollection.Select(Cell => ((UltraGridCell)Cell).Column.Key.ToString()).Distinct().ToList()
+                           on Op.ColName equals Tp
+                           select Op).ToList();
 
-            CalcByModel(Operations.Where(Op => Op.ColName == FinalType[0].ColumnName).ToList()[0].AvaliableOperations, CellsCollection);
+            var OperationsFinal = OpeCols[0].AvaliableOperations;
+            if (OpeCols.Count > 1)
+            {
+                var Pass = new List<Operations>();
+                foreach (ColsOperations LstOp in OpeCols)
+                {
+                     Pass = OperationsFinal.Intersect(LstOp.AvaliableOperations).ToList();
+                }
+                OperationsFinal = Pass;
+            }
+
+            CalcByModel(OperationsFinal, CellsCollection);
         }
 
         private bool IsAlowedColumn()
@@ -243,8 +249,6 @@ namespace DataSummarizer
         }
 
 
-
-
         private List<DateTime> GetListDate(List<object> CellsCollection)
         {
             var LDates = new List<DateTime>();
@@ -256,7 +260,7 @@ namespace DataSummarizer
             return LDates;
 
         }
-
+         
         private List<object> GetNonNullValues(List<object> CellsCollection)
         {
             var FinalList = new List<object>();
@@ -272,7 +276,6 @@ namespace DataSummarizer
         }
 
 
-
         private void AddEvent()
         {
             try
@@ -281,11 +284,18 @@ namespace DataSummarizer
                 DisplayControl.Click += DisplayControl_Click;
                 RelatedGrid.MouseUp += Ugv_MouseUp;
                 RelatedGrid.AfterSelectChange += RelatedGrid_AfterSelectChange;
+                RelatedGrid.BeforeSelectChange += RelatedGrid_BeforeSelectChange;
             }
             catch (Exception ex)
             {
                 throw ex;
             }
+        }
+
+        private void RelatedGrid_BeforeSelectChange(object sender, BeforeSelectChangeEventArgs e)
+        {
+            MyMenuStrip.Items.Clear();
+            DisplayControl.Text = "";
         }
 
         private void RelatedGrid_AfterSelectChange(object sender, AfterSelectChangeEventArgs e)

@@ -9,18 +9,18 @@ namespace DataSummarizer
         public List<Summarizer.Operations> AvaliableOperations { get; set; }
 
 
-        public ColsOperations()
+        internal ColsOperations()
         {
 
         }
 
-        public ColsOperations(string colName, string typeName)
+        internal ColsOperations(string colName, string typeName)
         {
             ColName = colName;
             TypeName = typeName;
         }
 
-        public ColsOperations(string colName, List<Summarizer.Operations> avaliableOperations)
+        internal ColsOperations(string colName, List<Summarizer.Operations> avaliableOperations)
         {
             ColName = colName;
             AvaliableOperations = avaliableOperations;

@@ -56,7 +56,6 @@
             this.Ugv.Name = "Ugv";
             this.Ugv.Size = new System.Drawing.Size(800, 297);
             this.Ugv.TabIndex = 0;
-            this.Ugv.AfterSelectChange += new Infragistics.Win.UltraWinGrid.AfterSelectChangeEventHandler(this.Ugv_AfterSelectChange);
             // 
             // panel1
             // 
