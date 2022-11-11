@@ -13,9 +13,9 @@ namespace WinFExcel
         }
         private void Form1_Load(object sender, EventArgs e)
         {
-                Ugv.DataSource = FeedData.FeedDataTable();
-                Ugv.DisplayLayout.Override.CellClickAction = Infragistics.Win.UltraWinGrid.CellClickAction.CellSelect;
-              var DtSumm = new DataSummarizer.Summarizer(Ugv, btn);
+            Ugv.DataSource = FeedData.FeedDataTable();
+            Ugv.DisplayLayout.Override.CellClickAction = Infragistics.Win.UltraWinGrid.CellClickAction.CellSelect;
+            var DtSumm = new DataSummarizer.Summarizer(Ugv, btn);
 
             //var Teste = new List<DataSummarizer.ColsOperations>()
             //{
